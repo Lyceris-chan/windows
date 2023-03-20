@@ -1,0 +1,32 @@
+name: UUP dump using GitHub Actions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cabextract wimtools chntpw genisoimage unzip aria2
+
+      - name: Unzip last modified zip file
+        run: |
+          latest_zip=$(find . -maxdepth 1 -type f -name "*.zip" -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
+          unzip "$latest_zip" -d extracted
+
+      - name: Create ISO using UUP dump
+        run: |
+          cd extracted
+          chmod +x uup_download_linux.sh
+          ./uup_download_linux.sh
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v2
+        with:
+          name: Windows
+          path: extracted/*.ISO
