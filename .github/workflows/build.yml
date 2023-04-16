@@ -17,7 +17,7 @@ jobs:
           Expand-Archive -Path $latest_zip.FullName -DestinationPath extracted
 
       - name: Create ISO using UUP dump
-        run: ./uup_download_windows.cmd
+        run: ./extracted/uup_download_windows.cmd
         shell: powershell
 
       - name: Upload ISO
