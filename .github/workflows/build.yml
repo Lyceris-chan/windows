@@ -5,28 +5,23 @@ on:
 
 jobs:
   unzip:
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cabextract wimtools chntpw genisoimage unzip aria2
+        uses: actions/checkout@v3
 
       - name: Unzip last modified zip file
         run: |
-          latest_zip=$(find . -maxdepth 1 -type f -name "*.zip" -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
-          unzip "$latest_zip" -d extracted
+          $latest_zip = Get-ChildItem -Path . -Filter *.zip | Sort-Object LastWriteTime | Select-Object -Last 1
+          Expand-Archive -Path $latest_zip.FullName -DestinationPath extracted
 
       - name: Create ISO using UUP dump
-        run: |
-          cd extracted
-          chmod +x uup_download_linux.sh
-          ./uup_download_linux.sh
+        run: ./uup_download_windows.cmd
+        shell: powershell
 
       - name: Upload ISO
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Windows
           path: extracted/*.ISO
