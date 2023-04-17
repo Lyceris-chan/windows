@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/windows/server
+      image: mcr.microsoft.com/windows/server:ltsc2022
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
